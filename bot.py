@@ -51,12 +51,12 @@ async def create_db():
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
     welcome_text = (
-        "✨ Welcome to Quiz Mitra Premium! ✨\n\n"
-        "Get access to exclusive quizzes and premium content.\n\n"
-        "Subscription Plans:\n"
-        "📅 Yearly – ₹99\n"
-        "♾️ Lifetime – ₹299\n\n"
-        "🔹 Join for a 10% Discount! If you join our Quiz Mitra channels, you’ll get a special discount."
+        "✨ **Welcome to Quiz Mitra Premium!** ✨\n\n"
+        "Get access to **exclusive quizzes** and premium content.\n\n"
+        "**Subscription Plans:**\n"
+        "📅 **Yearly** – ₹99\n"
+        "♾️ **Lifetime** – ₹299\n\n"
+        "🔹 **Join for a 10% Discount!** If you join our Quiz Mitra channels, you’ll get a special discount."
     )
 
     keyboard = InlineKeyboardMarkup().add(InlineKeyboardButton("Buy Now", callback_data="buy_now"))
@@ -84,7 +84,7 @@ async def discount_offer(callback_query: types.CallbackQuery):
         InlineKeyboardButton("💳 Buy Without Discount", callback_data=f"pay_{plan}")
     )
     await callback_query.message.edit_text(
-        "✨ Get a 10% Discount!\n\nJoin our Quiz Mitra channels and get a discount.\n\n"
+        "✨ **Get a 10% Discount!**\n\nJoin our **Quiz Mitra** channels and get a discount.\n\n"
         "Click below to proceed.",
         reply_markup=keyboard
     )
@@ -98,12 +98,14 @@ async def show_channels(callback_query: types.CallbackQuery):
     keyboard = InlineKeyboardMarkup().add(InlineKeyboardButton("✅ Check", callback_data=f"check_discount_{plan}"))
     
     await callback_query.message.edit_text(
-        f"Join all channels below to get a 10% discount:\n\n{channels_text}\n\n"
-        "You must join all channels to qualify. Click 'Check' after joining.",
+        f"**Join all channels below to get a 10% discount:**\n\n{channels_text}\n\n"
+        "**You must join all channels to qualify.** Click 'Check' after joining.",
         reply_markup=keyboard,
         disable_web_page_preview=True
     )
-  # --- Verify Channel Join Status ---
+
+
+# --- Verify Channel Join Status ---
 @dp.callback_query_handler(lambda c: c.data.startswith("check_discount"))
 async def check_channels(callback_query: types.CallbackQuery):
     plan = callback_query.data.split("_")[-1]
@@ -119,9 +121,9 @@ async def check_channels(callback_query: types.CallbackQuery):
     keyboard = InlineKeyboardMarkup().add(InlineKeyboardButton("✅ Paid? Send Screenshot", callback_data="send_screenshot"))
 
     await callback_query.message.edit_text(
-        f"✅ Discount Applied!\n\n"
-        f"💳 Pay ₹{price} to:\n"
-        f"
+        f"✅ **Discount Applied!**\n\n"
+        f"💳 Pay **₹{price}** to:\n"
+        f"```\nRakesh Patel\n9461012613@ptsbi\n```\n"
         "📸 After payment, send a screenshot here.",
         reply_markup=keyboard,
         parse_mode="Markdown"
@@ -137,8 +139,7 @@ async def pay_without_discount(callback_query: types.CallbackQuery):
 
     await callback_query.message.edit_text(
         f"💳 Pay **₹{price}** to:\n"
-        f"
-\nRakesh Patel\n9461012613@ptsbi\n```\n"
+        f"```\nRakesh Patel\n9461012613@ptsbi\n```\n"
         "📸 After payment, send a screenshot here.",
         reply_markup=keyboard,
         parse_mode="Markdown"
@@ -149,10 +150,10 @@ async def pay_without_discount(callback_query: types.CallbackQuery):
 @dp.message_handler(content_types=["photo"])
 async def forward_screenshot(message: types.Message):
     caption = (
-        fNew Payment Screenshotot** 🆕\n\n"
-        fUser:r:** {message.from_user.full_name} (@{message.from_user.username})\n"
-        fUser ID:D:** {message.from_user.id}\n\n"
-       Admins, verify and approve usingng** /approve user_id."
+        f"🆕 **New Payment Screenshot** 🆕\n\n"
+        f"👤 **User:** {message.from_user.full_name} (@{message.from_user.username})\n"
+        f"🆔 **User ID:** `{message.from_user.id}`\n\n"
+        "✅ **Admins, verify and approve using** `/approve user_id`."
     )
     await message.photo[-1].forward(ADMIN_GROUP_ID, caption=caption)
 
@@ -161,7 +162,7 @@ async def forward_screenshot(message: types.Message):
 @dp.message_handler(commands=["approve"])
 async def approve_user(message: types.Message):
     if not message.reply_to_message:
-        await message.reply("❌ Reply to the payment screenshot with /approve user_id.")
+        await message.reply("❌ Reply to the payment screenshot with `/approve user_id`.")
         return
 
     user_id = int(message.text.split()[1])
@@ -169,6 +170,6 @@ async def approve_user(message: types.Message):
     group_id = YEARLY_GROUP_ID if plan == "Yearly" else LIFETIME_GROUP_ID
 
     await bot.add_chat_members(group_id, user_id)
-    await bot.send_message(user_id, fCongratulations!s!** You've been added to the {plan} paid group!")
+    await bot.send_message(user_id, f"🎉 **Congratulations!** You've been added to the {plan} paid group!")
 
 executor.start_polling(dp, skip_updates=True)
